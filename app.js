@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 
 // const роуты
 const userRouter = require('./routes/users');
+const cardsRouter = require('./routes/cards');
 const error404 = require('./routes/error404')
 
 // const сервер
@@ -18,7 +19,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // базовый Id пользователя
 app.use((req, res, next) => {
   req.user = {
-    _id: '5d8b8592978f8bd833ca8133'
+    _id: '647763df8c495ada904c94c0'
   };
 
   next();
@@ -26,6 +27,7 @@ app.use((req, res, next) => {
 
 // app.use роуты
 app.use(userRouter);
+app.use(cardsRouter);
 app.use(error404);
 
 // дефолтный обработчик ошибок

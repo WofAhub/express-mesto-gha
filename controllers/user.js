@@ -23,7 +23,7 @@ module.exports.getUsersAll = (req, res, next) => {
 // получаем пользователя по id
 module.exports.getUserById = (req, res, next) => {
   User
-    .findById(req.params.userId)
+    .findById(req.user._id)
     .orFail(() => {
       throw new NotFoundError('Пользователь не найден')
     })
@@ -40,10 +40,71 @@ module.exports.getUserById = (req, res, next) => {
 
 // создаем пользователя
 module.exports.createUser = (req, res, next) => {
+  console.log(req.user._id);
   const { name, about, avatar } = req.body;
 
   User
     .create({ name, about, avatar })
+    .then(user => res.status(200).send({ data: user }))
+
+    .catch((err) => {
+      if (err instanceof mongoose.Error.ValidationError) {
+        const errorFields = Object.keys(err.errors);
+        const errorMessage = err.errors[errorFields[0]].message;
+
+        throw new ValidationError(errorMessage)
+      }
+
+      throw new UnhandleError('Сервер сейчас не отвечает. Подождите, когда он снова заработает')
+    })
+
+    .catch((err) => {
+      next(err)
+    });
+};
+
+// обновляем пользователя
+module.exports.updateUser = (req, res, next) => {
+  const { name, about } = req.body;
+
+  User
+    .findByIdAndUpdate(req.user._id, { name, about },
+      {
+        new: true,
+        runValidators: true,
+        upsert: false,
+      },
+    )
+    .then(user => res.status(200).send({ data: user }))
+
+    .catch((err) => {
+      if (err instanceof mongoose.Error.ValidationError) {
+        const errorFields = Object.keys(err.errors);
+        const errorMessage = err.errors[errorFields[0]].message;
+
+        throw new ValidationError(errorMessage)
+      }
+
+      throw new UnhandleError('Сервер сейчас не отвечает. Подождите, когда он снова заработает')
+    })
+
+    .catch((err) => {
+      next(err)
+    });
+};
+
+// обновляем аватар пользователя
+module.exports.updateUserAvatar = (req, res, next) => {
+  const { avatar } = req.body;
+
+  User
+    .findByIdAndUpdate(req.user._id, { avatar },
+      {
+        new: true,
+        runValidators: true,
+        upsert: false,
+      },
+    )
     .then(user => res.status(200).send({ data: user }))
 
     .catch((err) => {
