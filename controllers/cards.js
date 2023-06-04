@@ -88,11 +88,11 @@ module.exports.likeCard = (req, res, next) => {
     })
     .then(card => res.status(200).send({ data: card, message: 'Лайк поставлен ❤' }))
 
-    // .catch((err) => {
-    //   if (err.name = 'CastError') {
-    //     throw new ValidationError('Некорректный id карточки')
-    //   }
-    // })
+    .catch((err) => {
+      if (err.name = 'CastError') {
+        throw new ValidationError('Некорректный id карточки')
+      }
+    })
 
     .catch((err) => {
       next(err)
@@ -113,11 +113,11 @@ module.exports.dislikeCard = (req, res, next) =>
 
   .then(card => res.status(200).send({ data: card, message: 'Лайк убран 💔' }))
 
-  // .catch((err) => {
-  //   if (err.name = 'ValidationError') {
-  //     throw new ValidationError('Некорректный id карточки')
-  //   }
-  // })
+  .catch((err) => {
+    if (err.name = 'ValidationError') {
+      throw new ValidationError('Некорректный id карточки')
+    }
+  })
 
   .catch((err) => {
     next(err)
