@@ -83,12 +83,14 @@ module.exports.likeCard = (req, res, next) => {
     { new: true },
   )
     .populate(['owner', 'likes'])
-
+    .orFail(() => {
+      throw new NotFoundError('Карточка не найдена 😔')
+    })
     .then(card => res.status(200).send({ data: card, message: 'Лайк поставлен ❤' }))
 
     .catch((err) => {
-      if (err.name = 'ValidationError') {
-        throw new ValidationError('Карточка не найдена 😔')
+      if (err.name = 'CastError') {
+        throw new ValidationError('Некорректный id карточки')
       }
     })
 
@@ -103,14 +105,18 @@ module.exports.dislikeCard = (req, res, next) => Card.findByIdAndUpdate(
   { $pull: { likes: req.user._id } },
   { new: true },
 )
+  .orFail(() => {
+    throw new NotFoundError('Карточка не найдена 😔')
+  })
 
   .then(card => res.status(200).send({ data: card, message: 'Лайк убран 💔' }))
 
   .catch((err) => {
     if (err.name = 'ValidationError') {
-      throw new ValidationError('Карточка не найдена 😔')
+      throw new ValidationError('Некорректный id карточки')
     }
   })
+
   .catch((err) => {
     next(err)
   });
