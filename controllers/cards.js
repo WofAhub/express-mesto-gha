@@ -91,7 +91,7 @@ module.exports.likeCard = (req, res, next) => {
 
     .catch((err) => {
       if (err.name = 'ValidationError') {
-        throw new NotFoundError('Карточка не найдена 😔')
+        throw new ValidationError('Карточка не найдена 😔')
       }
     })
 
@@ -111,7 +111,7 @@ module.exports.dislikeCard = (req, res, next) => Card.findByIdAndUpdate(
 
   .catch((err) => {
     if (err.name = 'ValidationError') {
-      throw new NotFoundError('Карточка не найдена 😔')
+      throw new ValidationError('Карточка не найдена 😔')
     }
   })
   .catch((err) => {
