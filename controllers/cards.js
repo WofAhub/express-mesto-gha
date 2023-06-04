@@ -12,9 +12,6 @@ module.exports.getCard = (req, res, next) => {
   Card
     .find({})
     .populate('owner')
-    .orFail(() => {
-      throw new NotFoundError('Карточки не найдены 😔')
-    })
     .then(card => res.status(200).send({ data: card }))
     .catch((err) => {
       next(err)
