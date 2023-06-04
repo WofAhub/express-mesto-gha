@@ -84,14 +84,16 @@ module.exports.likeCard = (req, res, next) => {
   )
     .populate(['owner', 'likes'])
     .orFail(() => {
-      throw new NotFoundError('Карточка не найдена 😔')
+      return res.status(404).send({ message: 'Карточка не найдена' });
     })
     .then(card => res.status(200).send({ data: card, message: 'Лайк поставлен ❤' }))
 
     .catch((err) => {
       if (err.name = 'CastError') {
-        throw new ValidationError('Некорректный id карточки')
+        return next(new ValidationError('Некорректный id карточки'))
       }
+
+      return next(err)
     })
 
     .catch((err) => {
@@ -102,23 +104,25 @@ module.exports.likeCard = (req, res, next) => {
 // ставим дизлайк карточке
 module.exports.dislikeCard = (req, res, next) =>
   Card
-  .findByIdAndUpdate(
-    req.params.cardId,
-    { $pull: { likes: req.user._id } },
-    { new: true },
-  )
-  .orFail(() => {
-    throw new NotFoundError('Карточка не найдена 😔')
-  })
+    .findByIdAndUpdate(
+      req.params.cardId,
+      { $pull: { likes: req.user._id } },
+      { new: true },
+    )
+    .orFail(() => {
+      return res.status(404).send({ message: 'Карточка не найдена' });
+    })
 
-  .then(card => res.status(200).send({ data: card, message: 'Лайк убран 💔' }))
+    .then(card => res.status(200).send({ data: card, message: 'Лайк убран 💔' }))
 
-  .catch((err) => {
-    if (err.name = 'ValidationError') {
-      throw new ValidationError('Некорректный id карточки')
-    }
-  })
+    .catch((err) => {
+      if (err.name = 'CastError') {
+        return next(new ValidationError('Некорректный id карточки'))
+      }
 
-  .catch((err) => {
-    next(err)
-  });
+      return next(err)
+    })
+
+    .catch((err) => {
+      next(err)
+    });
