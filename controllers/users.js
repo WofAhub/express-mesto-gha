@@ -23,7 +23,7 @@ module.exports.getUsersAll = (req, res, next) => {
 // получаем пользователя по id
 module.exports.getUserById = (req, res, next) => {
   User
-    .findById(req.user._id)
+    .findById(req.params.id)
     .orFail(() => {
       throw new NotFoundError('Пользователь не найден')
     })
@@ -54,10 +54,10 @@ module.exports.createUser = (req, res, next) => {
   User
     .create(
       {
-        name: '10',
-        about: '10',
-        avatar: 'link:/link~!bad'
-      }
+        name: '2',
+        about: '2',
+        avatar: '2'
+      },
     )
     .then(user => res.status(200).send({ data: user }))
 
@@ -76,6 +76,7 @@ module.exports.createUser = (req, res, next) => {
       next(err)
     });
 };
+
 
 // обновляем пользователя
 module.exports.updateUser = (req, res, next) => {
@@ -112,11 +113,14 @@ module.exports.updateUserAvatar = (req, res, next) => {
   const { avatar } = req.body;
 
   User
-    .findByIdAndUpdate(req.user._id, { avatar },
+    .findByIdAndUpdate(
+      req.user._id,
+      {
+        avatar
+      },
       {
         new: true,
         runValidators: true,
-        upsert: false,
       },
     )
     .then(user => res.status(200).send({ data: user }))
