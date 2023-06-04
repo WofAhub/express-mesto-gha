@@ -88,11 +88,11 @@ module.exports.likeCard = (req, res, next) => {
     })
     .then(card => res.status(200).send({ data: card, message: 'Лайк поставлен ❤' }))
 
-    .catch((err) => {
-      if (err.name = 'CastError') {
-        throw new ValidationError('Некорректный id карточки')
-      }
-    })
+    // .catch((err) => {
+    //   if (err.name = 'CastError') {
+    //     throw new ValidationError('Некорректный id карточки')
+    //   }
+    // })
 
     .catch((err) => {
       next(err)
@@ -100,22 +100,24 @@ module.exports.likeCard = (req, res, next) => {
 }
 
 // ставим дизлайк карточке
-module.exports.dislikeCard = (req, res, next) => Card.findByIdAndUpdate(
-  req.params.cardId,
-  { $pull: { likes: req.user._id } },
-  { new: true },
-)
+module.exports.dislikeCard = (req, res, next) =>
+  Card
+  .findByIdAndUpdate(
+    req.params.cardId,
+    { $pull: { likes: req.user._id } },
+    { new: true },
+  )
   .orFail(() => {
     throw new NotFoundError('Карточка не найдена 😔')
   })
 
   .then(card => res.status(200).send({ data: card, message: 'Лайк убран 💔' }))
 
-  .catch((err) => {
-    if (err.name = 'ValidationError') {
-      throw new ValidationError('Некорректный id карточки')
-    }
-  })
+  // .catch((err) => {
+  //   if (err.name = 'ValidationError') {
+  //     throw new ValidationError('Некорректный id карточки')
+  //   }
+  // })
 
   .catch((err) => {
     next(err)
