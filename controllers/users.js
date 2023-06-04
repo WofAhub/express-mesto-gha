@@ -34,6 +34,14 @@ module.exports.getUserById = (req, res, next) => {
     )
 
     .catch((err) => {
+      if (err.name === 'CastError') {
+        return next(new ValidationError('Некорректный id пользователя'));
+      }
+
+      return next(err);
+    })
+
+    .catch((err) => {
       next(err)
     });
 };
@@ -44,7 +52,13 @@ module.exports.createUser = (req, res, next) => {
   const { name, about, avatar } = req.body;
 
   User
-    .create({ name, about, avatar })
+    .create(
+      {
+        name: '10',
+        about: '10',
+        avatar: 'link:/link~!bad'
+      }
+    )
     .then(user => res.status(200).send({ data: user }))
 
     .catch((err) => {

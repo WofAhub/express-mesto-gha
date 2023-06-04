@@ -25,7 +25,14 @@ module.exports.getCard = (req, res, next) => {
 module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
 
-  Card.create({ name, link, owner: req.user._id })
+  Card
+    .create(
+      {
+        name,
+        link,
+        owner: req.user._id
+      }
+    )
     .then(card => res.status(200).send({ data: card }))
 
     .catch((err) => {
@@ -36,7 +43,7 @@ module.exports.createCard = (req, res, next) => {
         throw new ValidationError(errorMessage)
       }
 
-      throw new UnhandleError('Сервер сейчас не отвечает. Подождите, когда он снова заработает')
+      throw new UnhandleError('Что-то пошло не так')
     })
 
     .catch((err) => {
@@ -83,6 +90,7 @@ module.exports.likeCard = (req, res, next) => {
       throw new NotFoundError('Карточка не найдена 😔')
     })
     .then(card => res.status(200).send({ data: card, message: 'Лайк поставлен ❤' }))
+
     .catch((err) => {
       next(err)
     });
