@@ -86,10 +86,14 @@ module.exports.likeCard = (req, res, next) => {
     { new: true },
   )
     .populate(['owner', 'likes'])
-    .orFail(() => {
-      throw new NotFoundError('Карточка не найдена 😔')
-    })
+
     .then(card => res.status(200).send({ data: card, message: 'Лайк поставлен ❤' }))
+
+    .catch((err) => {
+      if (err.name = 'ValidationError') {
+        throw new NotFoundError('Карточка не найдена 😔')
+      }
+    })
 
     .catch((err) => {
       next(err)
@@ -102,10 +106,14 @@ module.exports.dislikeCard = (req, res, next) => Card.findByIdAndUpdate(
   { $pull: { likes: req.user._id } },
   { new: true },
 )
-  .orFail(() => {
-    throw new NotFoundError('Карточка не найдена 😔')
-  })
+
   .then(card => res.status(200).send({ data: card, message: 'Лайк убран 💔' }))
+
+  .catch((err) => {
+    if (err.name = 'ValidationError') {
+      throw new NotFoundError('Карточка не найдена 😔')
+    }
+  })
   .catch((err) => {
     next(err)
   });
