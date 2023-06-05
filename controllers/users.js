@@ -25,7 +25,7 @@ module.exports.getUserById = (req, res, next) => {
   User
     .findById(req.params.id)
     .orFail(() => {
-      throw new NotFoundError('Пользователь не найден')
+      throw new NotFoundError('Пользователь по указанному _id не найден.')
     })
 
     .then(user => res

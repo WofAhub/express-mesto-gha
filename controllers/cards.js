@@ -4,7 +4,7 @@ const Card = require('../models/card');
 
 // const ошибки
 const ValidationError = require('../errors/ValidationError');
-const UnhandleError = require('../errors/UnhandleError');
+// const UnhandleError = require('../errors/UnhandleError');
 const NotFoundError = require('../errors/NotFoundError');
 
 // получаем карточки
@@ -37,16 +37,12 @@ module.exports.createCard = (req, res, next) => {
         const errorFields = Object.keys(err.errors);
         const errorMessage = err.errors[errorFields[0]].message;
 
-        throw new ValidationError(errorMessage)
+        next(new ValidationError(errorMessage))
+      } else {
+        next(err)
       }
-
-      throw new UnhandleError('Что-то пошло не так')
     })
-
-    .catch((err) => {
-      next(err)
-    });
-};
+}
 
 // удаляем карточку
 module.exports.deleteCard = (req, res, next) => {
@@ -62,15 +58,11 @@ module.exports.deleteCard = (req, res, next) => {
 
     .catch((err) => {
       if (err.name === 'CastError') {
-        return next(new ValidationError('Некорректный id карточки'));
+        next(new ValidationError('Некорректный id карточки'));
+      } else {
+        next(err)
       }
-
-      return next(err);
     })
-
-    .catch((err) => {
-      next(err)
-    });
 }
 
 // ставим лайк карточке
@@ -84,21 +76,17 @@ module.exports.likeCard = (req, res, next) => {
   )
     .populate(['owner', 'likes'])
     .orFail(() => {
-      return res.status(404).send({ message: 'Карточка не найдена' });
+      throw new NotFoundError('Карточка не найдена 😔')
     })
     .then(card => res.status(200).send({ data: card, message: 'Лайк поставлен ❤' }))
 
     .catch((err) => {
-      if (err.name = 'CastError') {
-        return next(new ValidationError('Некорректный id карточки'))
+      if (err.name === 'CastError') {
+        next(new ValidationError('Некорректный id карточки ❌'))
+      } else {
+        next(err)
       }
-
-      return next(err)
     })
-
-    .catch((err) => {
-      next(err)
-    });
 }
 
 // ставим дизлайк карточке
@@ -110,19 +98,15 @@ module.exports.dislikeCard = (req, res, next) =>
       { new: true },
     )
     .orFail(() => {
-      return res.status(404).send({ message: 'Карточка не найдена' });
+      throw new NotFoundError('Карточка не найдена 😔')
     })
 
     .then(card => res.status(200).send({ data: card, message: 'Лайк убран 💔' }))
 
     .catch((err) => {
-      if (err.name = 'CastError') {
-        return next(new ValidationError('Некорректный id карточки'))
+      if (err.name === 'CastError') {
+        next(new ValidationError('Некорректный id карточки ❌'))
+      } else {
+        next(err)
       }
-
-      return next(err)
     })
-
-    .catch((err) => {
-      next(err)
-    });
