@@ -4,14 +4,14 @@ const {
   createUser,
   getUserById,
   updateUser,
-  updateUserAvatar
-} = require('../controllers/users')
+  updateUserAvatar,
+} = require('../controllers/users');
 
 // все пользователи
 router.get('/users', getUsersAll);
 
 // пользователь
-router.get('/users/:id', getUserById)
+router.get('/users/:id', getUserById);
 
 // создаем
 router.post('/users', createUser);
@@ -20,6 +20,6 @@ router.post('/users', createUser);
 router.patch('/users/me', updateUser);
 
 // обновляем аватар
-router.patch('/users/me/avatar', updateUserAvatar)
+router.patch('/users/me/avatar', updateUserAvatar);
 
 module.exports = router;

@@ -4,7 +4,6 @@ const User = require('../models/user');
 
 // const ошибки
 const ValidationError = require('../errors/ValidationError');
-const UnhandleError = require('../errors/UnhandleError');
 const NotFoundError = require('../errors/NotFoundError');
 
 // получаем всех пользователей
@@ -12,26 +11,25 @@ module.exports.getUsersAll = (req, res, next) => {
   User
     .find({})
     .orFail(() => {
-      throw new NotFoundError('Пользователи не найдены')
+      throw new NotFoundError('Пользователи не найдены');
     })
-    .then(users => res.status(200).send({ data: users }))
+    .then((users) => res.status(200).send({ data: users }))
     .catch((err) => {
-      next(err)
+      next(err);
     });
-}
+};
 
 // получаем пользователя по id
 module.exports.getUserById = (req, res, next) => {
   User
     .findById(req.params.id)
     .orFail(() => {
-      throw new NotFoundError('Пользователь по указанному _id не найден.')
+      throw new NotFoundError('Пользователь по указанному _id не найден.');
     })
 
-    .then(user => res
+    .then((user) => res
       .status(200)
-      .send({ data: user })
-    )
+      .send({ data: user }))
 
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -42,7 +40,7 @@ module.exports.getUserById = (req, res, next) => {
     })
 
     .catch((err) => {
-      next(err)
+      next(err);
     });
 };
 
@@ -59,52 +57,48 @@ module.exports.createUser = (req, res, next) => {
         avatar,
       },
     )
-    .then(user => res.status(200).send({ data: user }))
+    .then((user) => res.status(200).send({ data: user }))
 
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
         const errorFields = Object.keys(err.errors);
         const errorMessage = err.errors[errorFields[0]].message;
 
-        throw new ValidationError(errorMessage)
+        next(new ValidationError(errorMessage));
+      } else {
+        next(err);
       }
-
-      throw new UnhandleError('Сервер сейчас не отвечает. Подождите, когда он снова заработает')
-    })
-
-    .catch((err) => {
-      next(err)
     });
 };
-
 
 // обновляем пользователя
 module.exports.updateUser = (req, res, next) => {
   const { name, about } = req.body;
 
   User
-    .findByIdAndUpdate(req.user._id, { name, about },
+    .findByIdAndUpdate(
+      req.user._id,
+      {
+        name,
+        about,
+      },
       {
         new: true,
         runValidators: true,
         upsert: false,
       },
     )
-    .then(user => res.status(200).send({ data: user }))
+    .then((user) => res.status(200).send({ data: user }))
 
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
         const errorFields = Object.keys(err.errors);
         const errorMessage = err.errors[errorFields[0]].message;
 
-        throw new ValidationError(errorMessage)
+        next(new ValidationError(errorMessage));
+      } else {
+        next(err);
       }
-
-      throw new UnhandleError('Сервер сейчас не отвечает. Подождите, когда он снова заработает')
-    })
-
-    .catch((err) => {
-      next(err)
     });
 };
 
@@ -115,28 +109,22 @@ module.exports.updateUserAvatar = (req, res, next) => {
   User
     .findByIdAndUpdate(
       req.user._id,
-      {
-        avatar
-      },
+      { avatar },
       {
         new: true,
         runValidators: true,
       },
     )
-    .then(user => res.status(200).send({ data: user }))
+    .then((user) => res.status(200).send({ data: user }))
 
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
         const errorFields = Object.keys(err.errors);
         const errorMessage = err.errors[errorFields[0]].message;
 
-        throw new ValidationError(errorMessage)
+        next(new ValidationError(errorMessage));
+      } else {
+        next(err);
       }
-
-      throw new UnhandleError('Сервер сейчас не отвечает. Подождите, когда он снова заработает')
-    })
-
-    .catch((err) => {
-      next(err)
     });
 };

@@ -13,7 +13,7 @@
     "url": "git+https://github.com/WofAhub/express-mesto-gha.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "Zharkov Andrey",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/WofAhub/express-mesto-gha/issues"
@@ -26,7 +26,8 @@
   },
   "devDependencies": {
     "eslint": "^8.41.0",
-    "eslint-plugin-react": "^7.32.2",
-    "nodemon": "^2.0.22"
+    "nodemon": "^2.0.22",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.27.5"
   }
 }
