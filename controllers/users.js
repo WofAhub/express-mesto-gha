@@ -42,7 +42,7 @@ module.exports.getUserById = (req, res, next) => {
 
 // создаем пользователя
 module.exports.createUser = (req, res, next) => {
-  console.log(req.user._id);
+  console.log(req.user._id); // eslint-disable-line
   const { name, about, avatar } = req.body;
 
   User
