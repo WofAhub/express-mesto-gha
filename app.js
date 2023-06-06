@@ -31,7 +31,7 @@ app.use(cardsRouter);
 app.use(error404);
 
 // дефолтный обработчик ошибок
-app.use((err, req, res) => {
+app.use((err, req, res, next) => {
   console.log('Дефолтный обработчик ошибок', err);
   const { statusCode = 500, message = 'Ошибка' } = err;
   res.status(statusCode).send({ message });
