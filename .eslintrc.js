@@ -13,9 +13,6 @@ module.exports = {
     ecmaVersion: 'latest',
     sourceType: 'module',
   },
-  plugins: [
-    'react',
-  ],
   rules: {
     'no-underscore-dangle': ['error', { allow: ['_id'] }],
   },
