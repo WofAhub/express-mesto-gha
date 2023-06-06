@@ -31,7 +31,7 @@ app.use(cardsRouter);
 app.use(error404);
 
 // дефолтный обработчик ошибок
-app.use((err, req, res, next) => {
+app.use((err, req, res, next)  => { // eslint-disable-line
   console.log('Дефолтный обработчик ошибок', err);
   const { statusCode = 500, message = 'Ошибка' } = err;
   res.status(statusCode).send({ message });
