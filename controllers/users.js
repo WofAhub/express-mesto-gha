@@ -1,10 +1,90 @@
 // const база
+const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
+// const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 
+// const подпись токена
+const { signToken } = require('../utils/jwtAuth');
+
 // const ошибки
+const MONGO_DUBLICATE_ERROR = 11000;
 const ValidationError = require('../errors/ValidationError');
 const NotFoundError = require('../errors/NotFoundError');
+const DublicateError = require('../errors/DublicateError');
+const UnauthorizedError = require('../errors/UnauthorizedError');
+
+// соль
+const SAULT_ROUNDS = 10;
+
+// создаем пользователя
+module.exports.createUser = (req, res, next) => {
+  const {
+    name,
+    about,
+    avatar,
+    email,
+    password,
+  } = req.body;
+
+  bcrypt.hash(password, SAULT_ROUNDS)
+    .then((hash) => User
+      .create(
+        {
+          name,
+          about,
+          avatar,
+          email,
+          password: hash,
+        },
+      ))
+    .then((user) => {
+      res.status(200)
+        .send({
+          _id: user._id,
+          name: user.name,
+          about: user.about,
+          avatar: user.avatar,
+          email: user.email,
+        });
+    })
+    .catch((err) => {
+      if (err instanceof mongoose.Error.ValidationError) {
+        const errorFields = Object.keys(err.errors);
+        const errorMessage = err.errors[errorFields[0]].message;
+
+        next(new ValidationError(errorMessage));
+      } else if (err.code === MONGO_DUBLICATE_ERROR) {
+        next(new DublicateError('Пользователь с таким email уже существует'));
+      } else {
+        next(err);
+      }
+    });
+};
+
+// авторизация
+module.exports.login = (req, res, next) => {
+  const { email, password } = req.body;
+
+  User
+    .findOne({ email, password }).select('+password')
+    .orFail(() => {
+      throw new UnauthorizedError('Неверный логин или пароль');
+    })
+    .then((user) => {
+      const token = signToken({
+        _id: user._id,
+      });
+      res.status(200).send({ token });
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new UnauthorizedError('Неверный логин или пароль'));
+      } else {
+        next(err);
+      }
+    });
+};
 
 // получаем всех пользователей
 module.exports.getUsersAll = (req, res, next) => {
@@ -40,27 +120,19 @@ module.exports.getUserById = (req, res, next) => {
     });
 };
 
-// создаем пользователя
-module.exports.createUser = (req, res, next) => {
-  console.log(req.user._id); // eslint-disable-line
-  const { name, about, avatar } = req.body;
-
+module.exports.getMe = (req, res, next) => {
   User
-    .create(
-      {
-        name,
-        about,
-        avatar,
-      },
-    )
-    .then((user) => res.status(200).send({ data: user }))
+    .findById(req.user._id)
+    .orFail(() => {
+      throw new NotFoundError('Пользователь по указанному _id не найден.');
+    })
+    .then((user) => res
+      .status(200)
+      .send({ data: user }))
 
     .catch((err) => {
-      if (err instanceof mongoose.Error.ValidationError) {
-        const errorFields = Object.keys(err.errors);
-        const errorMessage = err.errors[errorFields[0]].message;
-
-        next(new ValidationError(errorMessage));
+      if (err.name === 'CastError') {
+        next(new ValidationError('Некорректный id пользователя'));
       } else {
         next(err);
       }
