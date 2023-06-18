@@ -26,10 +26,11 @@ app.use(authAndRegisterRouter);
 
 // app.use роуты
 app.use(auth);
-app.use(errors());
 app.use(userRouter);
 app.use(cardsRouter);
 app.use(error404);
+
+app.use(errors());
 
 // дефолтный обработчик ошибок
 app.use((err, req, res, next)  => { // eslint-disable-line

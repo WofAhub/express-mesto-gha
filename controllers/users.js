@@ -64,10 +64,10 @@ module.exports.createUser = (req, res, next) => {
 
 // авторизация
 module.exports.login = (req, res, next) => {
-  const { email, password } = req.body;
+  const { email } = req.body;
 
   User
-    .findOne({ email, password }).select('+password')
+    .findOne({ email }).select('+password')
     .orFail(() => {
       throw new UnauthorizedError('Неверный логин или пароль');
     })
