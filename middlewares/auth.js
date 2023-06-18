@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const { checkToken } = require('../utils/jwtAuth');
 const UnauthorizedError = require('../errors/UnauthorizedError');
 
@@ -14,11 +15,11 @@ module.exports = (req, res, next) => { // eslint-disable-line
 
   try {
     payload = checkToken(token);
+    req.user = {
+      _id: new mongoose.Types.ObjectId(payload._id),
+    };
+    next();
   } catch (err) {
     return next(new UnauthorizedError('Авторизуйтесь'));
   }
-
-  req.user = payload;
-
-  next();
 };

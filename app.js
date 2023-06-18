@@ -2,10 +2,10 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const { errors } = require('celebrate');
 
 // const миддлвеир
 const auth = require('./middlewares/auth');
-// const { checkToken } = require('./utils/jwtAuth');
 
 // const роуты
 const userRouter = require('./routes/users');
@@ -26,6 +26,7 @@ app.use(authAndRegisterRouter);
 
 // app.use роуты
 app.use(auth);
+app.use(errors());
 app.use(userRouter);
 app.use(cardsRouter);
 app.use(error404);

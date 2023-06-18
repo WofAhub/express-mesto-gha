@@ -120,6 +120,7 @@ module.exports.getUserById = (req, res, next) => {
     });
 };
 
+// поиск меня
 module.exports.getMe = (req, res, next) => {
   User
     .findById(req.user._id)

@@ -13,6 +13,7 @@ router.get('/users', getUsersAll);
 // пользователь
 router.get('/users/:id', getUserById);
 
+// получаем текущего пользователя
 router.get('/users/me', getMe);
 
 // обновляем профиль
