@@ -7,14 +7,14 @@ const {
   getMe,
 } = require('../controllers/users');
 
+// получаем текущего пользователя
+router.get('/users/me', getMe);
+
 // все пользователи
 router.get('/users', getUsersAll);
 
 // пользователь
 router.get('/users/:id', getUserById);
-
-// получаем текущего пользователя
-router.get('/users/me', getMe);
 
 // обновляем профиль
 router.patch('/users/me', updateUser);
