@@ -7,6 +7,11 @@ const {
   getMe,
 } = require('../controllers/users');
 
+const {
+  validationUpdateAvatar,
+  validationUpdateUser
+} = require('../middlewares/validation');
+
 // получаем текущего пользователя
 router.get('/users/me', getMe);
 
@@ -17,9 +22,9 @@ router.get('/users', getUsersAll);
 router.get('/users/:id', getUserById);
 
 // обновляем профиль
-router.patch('/users/me', updateUser);
+router.patch('/users/me', validationUpdateUser, updateUser);
 
 // обновляем аватар
-router.patch('/users/me/avatar', updateUserAvatar);
+router.patch('/users/me/avatar', validationUpdateAvatar, updateUserAvatar);
 
 module.exports = router;
