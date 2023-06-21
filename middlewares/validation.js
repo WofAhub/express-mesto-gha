@@ -1,4 +1,5 @@
 const { celebrate, Joi } = require('celebrate');
+const { URL_REGEX } = require('../utils/constants');
 
 // логин юзера
 const validationLogin = celebrate({
@@ -15,7 +16,7 @@ const validationCreateUser = celebrate({
     password: Joi.string().required(),
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string().uri(),
+    avatar: Joi.string().uri().regex(URL_REGEX),
   }),
 });
 
@@ -29,7 +30,7 @@ const validationGetUser = celebrate({
 // обновление автара
 const validationUpdateAvatar = celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().uri(),
+    avatar: Joi.string().uri().regex(URL_REGEX),
   }),
 });
 
@@ -45,7 +46,7 @@ const validationUpdateUser = celebrate({
 const validationCreateCard = celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
-    link: Joi.string().required().uri(),
+    link: Joi.string().required().uri().regex(URL_REGEX),
   }),
 });
 
