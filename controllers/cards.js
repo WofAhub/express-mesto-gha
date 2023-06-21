@@ -44,29 +44,26 @@ module.exports.createCard = (req, res, next) => {
     });
 };
 
-// удаляем карточку
 module.exports.deleteCard = (req, res, next) => {
-  const { cardId } = req.params;
-  const { userId } = req.user;
-
-  Card
-    .findByIdAndRemove(cardId)
-    .populate(['owner', 'likes'])
-    .then((card) => {
-      if (!card) {
-        next(new NotFoundError('Карточка не найдена'));
-      }
-      if (cardId !== userId) {
-        next(new NotMyCardError('Это не Ваша карточка'));
-      }
+  Card.findById(req.params.cardId)
+    .orFail(() => {
+      throw new NotFoundError('Карточка с данным id не найдена');
     })
     .then((card) => {
-      res.status(200).send({ data: card, message: 'Карточка удалена' });
+      const owner = card.owner.toString();
+      if (req.user._id === owner) {
+        Card.deleteOne(card)
+          .then(() => {
+            res.status(200).send(card);
+          })
+          .catch(next);
+      } else {
+        throw new NotMyCardError('Это не Ваша карточка');
+      }
     })
-
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new ValidationError('Некорректный id карточки'));
+        next(new ValidationError('Некорректный id карточки ❌'));
       } else {
         next(err);
       }
