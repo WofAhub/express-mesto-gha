@@ -22,7 +22,7 @@ router.post('/cards', validationCreateCard, createCard);
 router.delete('/cards/:cardId', validationCardId, deleteCard);
 
 // лайк
-router.put('/cards/:cardId/likes', likeCard);
+router.put('/cards/:cardId/likes', validationCardId, likeCard);
 
 // дизлайк
 router.delete('/cards/:cardId/likes', validationCardId, dislikeCard);
