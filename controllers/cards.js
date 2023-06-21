@@ -56,7 +56,7 @@ module.exports.deleteCard = (req, res, next) => {
       if (!card) {
         next(new NotFoundError('Карточка не найдена'));
       }
-      if (card !== userId) {
+      if (cardId !== userId) {
         next(new NotMyCardError('Это не Ваша карточка'));
       }
     })
