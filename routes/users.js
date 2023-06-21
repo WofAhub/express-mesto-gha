@@ -9,7 +9,8 @@ const {
 
 const {
   validationUpdateAvatar,
-  validationUpdateUser
+  validationUpdateUser,
+  validationGetUser,
 } = require('../middlewares/validation');
 
 // получаем текущего пользователя
@@ -19,7 +20,7 @@ router.get('/users/me', getMe);
 router.get('/users', getUsersAll);
 
 // пользователь
-router.get('/users/:id', getUserById);
+router.get('/users/:id', validationGetUser, getUserById);
 
 // обновляем профиль
 router.patch('/users/me', validationUpdateUser, updateUser);

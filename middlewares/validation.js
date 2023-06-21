@@ -19,6 +19,13 @@ const validationCreateUser = celebrate({
   }),
 });
 
+// получение юзера
+const validationGetUser = celebrate({
+  params: Joi.object().keys({
+    id: Joi.string().hex().length(24),
+  }),
+});
+
 // обновление автара
 const validationUpdateAvatar = celebrate({
   body: Joi.object().keys({
@@ -42,10 +49,27 @@ const validationCreateCard = celebrate({
   }),
 });
 
+// удаление карточки
+const validationDeleteCard = celebrate({
+  params: Joi.object().keys({
+    cardId: Joi.string().hex().length(24),
+    id: Joi.string().hex().length(24),
+  }),
+});
+
+// // удаление лайка
+// const validationDislike = celebrate({
+//   params: Joi.object().keys({
+//     cardId: Joi.string().hex().length(24),
+//   }),
+// });
+
 module.exports = {
   validationLogin,
   validationCreateUser,
   validationCreateCard,
   validationUpdateAvatar,
   validationUpdateUser,
+  validationGetUser,
+  validationDeleteCard,
 };
