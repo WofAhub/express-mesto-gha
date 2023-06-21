@@ -11,6 +11,9 @@ const NotMyCardError = require('../errors/NotMyCardError');
 module.exports.getCard = (req, res, next) => {
   Card
     .find({})
+    .orFail(() => {
+      throw new NotFoundError('Карточки не найдены');
+    })
     .populate('owner')
     .then((card) => res.status(200).send({ data: card }))
     .catch((err) => {
@@ -44,29 +47,71 @@ module.exports.createCard = (req, res, next) => {
     });
 };
 
+// удаляем карточку
+// module.exports.deleteCard = (req, res, next) => {
+//   const { cardId } = req.params;
+
+//   Card
+//     .findById(cardId)
+//     .populate(['owner'])
+//     .then((card) => {
+//       if (!card) {
+//         throw new NotFoundError('Карточка не найдена');
+//       }
+//     });
+
+//     const ownerId = card.owner.id;
+//     const userId = req.user._id;
+
+//     if (ownerId !== userId) {
+//       throw new NotFoundError('Это не Ваша карточка')
+//     }
+
+//     ownerId
+//     .findByIdAndRemove(cardId)
+//     .then((card) => {
+//       if(ownerId !== userId) {
+//         throw new NotMyCardError('Это не Ваша карточка')
+//       }
+//     }) res.status(200).send({ data: card, message: 'Карточка удалена' }))
+
+//     .catch((err) => {
+//       if (err.name === 'CastError') {
+//         next(new ValidationError('Некорректный id карточки'));
+//       } else {
+//         next(err);
+//       }
+//     });
+// };
+
 module.exports.deleteCard = (req, res, next) => {
-  Card.findById(req.params.cardId)
-    .orFail(() => {
-      throw new NotFoundError('Карточка с данным id не найдена');
-    })
+  const { cardId } = req.params;
+
+  Card.findById(cardId)
     .then((card) => {
-      const owner = card.owner.toString();
-      if (req.user._id === owner) {
-        Card.deleteOne(card)
-          .then(() => {
-            res.status(200).send(card);
-          })
-          .catch(next);
-      } else {
+      if (!card) {
+        throw new NotFoundError('Карточка не найдена');
+      }
+
+      if (card.owner.toString() !== req.user._id) {
         throw new NotMyCardError('Это не Ваша карточка');
       }
+
+      return Card.findByIdAndRemove(cardId)
+        .populate(['owner', 'likes'])
+        .then((myCard) => {
+          res.send({ data: myCard });
+        })
+        .catch((err) => {
+          next(err);
+        });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new ValidationError('Некорректный id карточки ❌'));
-      } else {
-        next(err);
+        return next(new ValidationError('Некорректный id карточки'));
       }
+
+      return next(err);
     });
 };
 
