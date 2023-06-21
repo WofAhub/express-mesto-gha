@@ -49,20 +49,12 @@ const validationCreateCard = celebrate({
   }),
 });
 
-// удаление карточки
-const validationDeleteCard = celebrate({
+// валидация айди карточки
+const validationCardId = celebrate({
   params: Joi.object().keys({
-    cardId: Joi.string().hex().length(24),
-    id: Joi.string().hex().length(24),
+    cardId: Joi.string().hex().length(24).required(),
   }),
 });
-
-// // удаление лайка
-// const validationDislike = celebrate({
-//   params: Joi.object().keys({
-//     cardId: Joi.string().hex().length(24),
-//   }),
-// });
 
 module.exports = {
   validationLogin,
@@ -71,5 +63,5 @@ module.exports = {
   validationUpdateAvatar,
   validationUpdateUser,
   validationGetUser,
-  validationDeleteCard,
+  validationCardId,
 };

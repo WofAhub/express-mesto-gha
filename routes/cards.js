@@ -9,7 +9,7 @@ const {
 
 const {
   validationCreateCard,
-  validationDeleteCard,
+  validationCardId,
 } = require('../middlewares/validation');
 
 // получаем
@@ -19,12 +19,12 @@ router.get('/cards', getCard);
 router.post('/cards', validationCreateCard, createCard);
 
 // удаляем
-router.delete('/cards/:cardId', validationDeleteCard, deleteCard);
+router.delete('/cards/:cardId', validationCardId, deleteCard);
 
 // лайк
 router.put('/cards/:cardId/likes', likeCard);
 
 // дизлайк
-router.delete('/cards/:cardId/likes', dislikeCard);
+router.delete('/cards/:cardId/likes', validationCardId, dislikeCard);
 
 module.exports = router;
