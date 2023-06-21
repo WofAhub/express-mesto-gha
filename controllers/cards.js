@@ -48,70 +48,30 @@ module.exports.createCard = (req, res, next) => {
 };
 
 // удаляем карточку
-// module.exports.deleteCard = (req, res, next) => {
-//   const { cardId } = req.params;
-
-//   Card
-//     .findById(cardId)
-//     .populate(['owner'])
-//     .then((card) => {
-//       if (!card) {
-//         throw new NotFoundError('Карточка не найдена');
-//       }
-//     });
-
-//     const ownerId = card.owner.id;
-//     const userId = req.user._id;
-
-//     if (ownerId !== userId) {
-//       throw new NotFoundError('Это не Ваша карточка')
-//     }
-
-//     ownerId
-//     .findByIdAndRemove(cardId)
-//     .then((card) => {
-//       if(ownerId !== userId) {
-//         throw new NotMyCardError('Это не Ваша карточка')
-//       }
-//     }) res.status(200).send({ data: card, message: 'Карточка удалена' }))
-
-//     .catch((err) => {
-//       if (err.name === 'CastError') {
-//         next(new ValidationError('Некорректный id карточки'));
-//       } else {
-//         next(err);
-//       }
-//     });
-// };
-
 module.exports.deleteCard = (req, res, next) => {
-  const { cardId } = req.params;
-
-  Card.findById(cardId)
+  Card
+    .findById(req.params.cardId)
+    .orFail(() => {
+      throw new NotFoundError('Карточка не найдена');
+    })
     .then((card) => {
-      if (!card) {
-        throw new NotFoundError('Карточка не найдена');
-      }
-
-      if (card.owner.toString() !== req.user._id) {
+      const owner = card.owner.toString();
+      if (req.user._id === owner) {
+        Card.deleteOne(card)
+          .then(() => {
+            res.send(card);
+          })
+          .catch(next);
+      } else {
         throw new NotMyCardError('Это не Ваша карточка');
       }
-
-      return Card.findByIdAndRemove(cardId)
-        .populate(['owner', 'likes'])
-        .then((myCard) => {
-          res.send({ data: myCard });
-        })
-        .catch((err) => {
-          next(err);
-        });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return next(new ValidationError('Некорректный id карточки'));
+        next(new ValidationError('Переданы некорректные данные удаления'));
+      } else {
+        next(err);
       }
-
-      return next(err);
     });
 };
 
