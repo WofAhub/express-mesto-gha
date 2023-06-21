@@ -5,6 +5,7 @@ const Card = require('../models/card');
 // const ошибки
 const ValidationError = require('../errors/ValidationError');
 const NotFoundError = require('../errors/NotFoundError');
+const NotMyCardError = require('../errors/NotMyCardError');
 
 // получаем карточки
 module.exports.getCard = (req, res, next) => {
@@ -46,14 +47,22 @@ module.exports.createCard = (req, res, next) => {
 // удаляем карточку
 module.exports.deleteCard = (req, res, next) => {
   const { cardId } = req.params;
+  const { userId } = req.user;
 
   Card
     .findByIdAndRemove(cardId)
     .populate(['owner', 'likes'])
-    .orFail(() => {
-      throw new NotFoundError('Карточка не найдена');
+    .then((card) => {
+      if (!card) {
+        next(new NotFoundError('Карточка не найдена'));
+      }
+      if (card !== userId) {
+        next(new NotMyCardError('Это не Ваша карточка'));
+      }
     })
-    .then((card) => res.status(200).send({ data: card, message: 'Карточка удалена' }))
+    .then((card) => {
+      res.status(200).send({ data: card, message: 'Карточка удалена' });
+    })
 
     .catch((err) => {
       if (err.name === 'CastError') {
