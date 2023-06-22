@@ -22,9 +22,9 @@ const app = express();
 
 // app.use база
 app.use(helmet());
+app.use(limiter);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(limiter);
 
 // app.use логин и регистрация
 app.use(authAndRegisterRouter);
