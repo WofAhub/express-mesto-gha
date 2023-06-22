@@ -8,7 +8,7 @@ const { errors } = require('celebrate');
 // const миддлвеир
 const limiter = require('./middlewares/rateLimit');
 const auth = require('./middlewares/auth');
-const errorHandler = require('./middlewares/errorHandler');
+const errorHander = require('./middlewares/errorHander');
 
 // const роуты
 const userRouter = require('./routes/users');
@@ -38,7 +38,7 @@ app.use(error404);
 app.use(errors());
 
 // дефолтный обработчик ошибок
-app.use(errorHandler);
+app.use(errorHander);
 
 // подсоединение к mongoose -> подключение к серверу
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb')
