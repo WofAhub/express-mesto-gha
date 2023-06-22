@@ -1,11 +1,14 @@
 // const база
 const express = require('express');
 const mongoose = require('mongoose');
+const helmet = require('helmet');
 const bodyParser = require('body-parser');
 const { errors } = require('celebrate');
+const limiter = require('./middlewares/rateLimit');
 
 // const миддлвеир
 const auth = require('./middlewares/auth');
+const errorHandler = require('./middlewares/errorHandler');
 
 // const роуты
 const userRouter = require('./routes/users');
@@ -18,8 +21,10 @@ const { PORT = 3000 } = process.env;
 const app = express();
 
 // app.use база
+app.use(helmet());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(limiter);
 
 // app.use логин и регистрация
 app.use(authAndRegisterRouter);
@@ -33,11 +38,7 @@ app.use(error404);
 app.use(errors());
 
 // дефолтный обработчик ошибок
-app.use((err, req, res, next)  => { // eslint-disable-line
-  console.log('Дефолтный обработчик ошибок', err); // eslint-disable-line
-  const { statusCode = 500, message = 'Ошибка' } = err;
-  res.status(statusCode).send({ message });
-});
+app.use(errorHandler);
 
 // подсоединение к mongoose -> подключение к серверу
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb')
