@@ -4,9 +4,9 @@ const mongoose = require('mongoose');
 const helmet = require('helmet');
 const bodyParser = require('body-parser');
 const { errors } = require('celebrate');
-const limiter = require('./middlewares/rateLimit');
 
 // const миддлвеир
+const limiter = require('./middlewares/rateLimit');
 const auth = require('./middlewares/auth');
 const errorHandler = require('./middlewares/errorHandler');
 
