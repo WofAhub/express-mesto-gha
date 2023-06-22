@@ -11,9 +11,6 @@ const ForbiddenError = require('../errors/ForbiddenError');
 module.exports.getCard = (req, res, next) => {
   Card
     .find({})
-    .orFail(() => {
-      throw new NotFoundError('Карточки не найдены');
-    })
     .populate('owner')
     .then((card) => res.status(200).send({ data: card }))
     .catch((err) => {
@@ -61,7 +58,7 @@ module.exports.deleteCard = (req, res, next) => {
       if (owner === _id) {
         Card.deleteOne(card)
           .then(() => {
-            res.status(200).send({message: 'Карточка удалена'})
+            res.status(200).send({ message: 'Карточка удалена' });
           })
           .catch(next);
       } else {
