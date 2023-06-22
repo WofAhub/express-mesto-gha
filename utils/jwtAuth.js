@@ -10,7 +10,7 @@ function checkToken(token) {
 
 // подпись токена
 function signToken(payload) {
-  return jwt.sign(payload, SECRET_KEY);
+  return jwt.sign(payload, SECRET_KEY, { expiresIn: '7d' });
 }
 
 module.exports = {

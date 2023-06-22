@@ -11,7 +11,6 @@ const MONGO_DUBLICATE_ERROR = 11000;
 const ValidationError = require('../errors/ValidationError');
 const NotFoundError = require('../errors/NotFoundError');
 const DublicateError = require('../errors/DublicateError');
-const UnauthorizedError = require('../errors/UnauthorizedError');
 
 // соль
 const SAULT_ROUNDS = 10;
@@ -38,7 +37,7 @@ module.exports.createUser = (req, res, next) => {
         },
       ))
     .then((user) => {
-      res.status(200)
+      res.status(201)
         .send({
           _id: user._id,
           name: user.name,
@@ -63,26 +62,16 @@ module.exports.createUser = (req, res, next) => {
 
 // авторизация
 module.exports.login = (req, res, next) => {
-  const { email } = req.body;
+  const { email, password } = req.body;
 
-  User
-    .findOne({ email }).select('+password')
-    .orFail(() => {
-      throw new UnauthorizedError('Неверный логин или пароль');
-    })
+  return User.findUserByCredentials(email, password)
     .then((user) => {
       const token = signToken({
         _id: user._id,
       });
       res.status(200).send({ token });
     })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        next(new UnauthorizedError('Неверный логин или пароль'));
-      } else {
-        next(err);
-      }
-    });
+    .catch(next);
 };
 
 // получаем всех пользователей
