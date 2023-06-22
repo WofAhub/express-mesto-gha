@@ -6,7 +6,6 @@ const bodyParser = require('body-parser');
 const { errors } = require('celebrate');
 
 // const миддлвеир
-const limiter = require('./middlewares/rateLimit');
 const auth = require('./middlewares/auth');
 const errorHandler = require('./middlewares/errorHandler');
 
@@ -22,7 +21,6 @@ const app = express();
 
 // app.use база
 app.use(helmet());
-app.use(limiter);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
