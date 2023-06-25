@@ -4,10 +4,13 @@ const mongoose = require('mongoose');
 const helmet = require('helmet');
 const bodyParser = require('body-parser');
 const { errors } = require('celebrate');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 
-// const миддлвеир
+// const миддлвары
 const auth = require('./middlewares/auth');
+const limiter = require('./middlewares/rateLimiter');
 const errorHandler = require('./middlewares/errorHandler');
+const cors = require('./middlewares/cors');
 
 // const роуты
 const userRouter = require('./routes/users');
@@ -23,6 +26,13 @@ const app = express();
 app.use(helmet());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cors);
+
+// логгер запросов
+app.use(requestLogger);
+
+// лимитер
+app.use(limiter);
 
 // app.use логин и регистрация
 app.use(authAndRegisterRouter);
@@ -32,6 +42,9 @@ app.use(auth);
 app.use(userRouter);
 app.use(cardsRouter);
 app.use(error404);
+
+// логгер ошибок
+app.use(errorLogger);
 
 app.use(errors());
 

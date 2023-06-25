@@ -1,4 +1,6 @@
 const router = require('express').Router();
+
+// const контроллер
 const {
   getCard,
   createCard,
@@ -7,6 +9,7 @@ const {
   dislikeCard,
 } = require('../controllers/cards');
 
+// const валидация
 const {
   validationCreateCard,
   validationCardId,

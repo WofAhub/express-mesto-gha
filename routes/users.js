@@ -1,4 +1,6 @@
 const router = require('express').Router();
+
+// const контроллер
 const {
   getUsersAll,
   getUserById,
