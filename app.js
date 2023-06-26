@@ -34,6 +34,13 @@ app.use(requestLogger);
 // лимитер
 app.use(limiter);
 
+// краш-тест
+app.get('/crash-test', () => {
+  setTimeout(() => {
+    throw new Error('Сервер сейчас упадёт');
+  }, 0);
+});
+
 // app.use логин и регистрация
 app.use(authAndRegisterRouter);
 
@@ -46,6 +53,7 @@ app.use(error404);
 // логгер ошибок
 app.use(errorLogger);
 
+// обработчик ошибок
 app.use(errors());
 
 // дефолтный обработчик ошибок
